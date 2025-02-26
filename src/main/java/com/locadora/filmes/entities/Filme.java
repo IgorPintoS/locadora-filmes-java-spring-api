@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "filmes")
-public class Filmes {
+public class Filme {
 
     @Id
     @Column(name = "filme_id")
@@ -35,10 +35,10 @@ public class Filmes {
     @Column(name = "quantidade_estoque")
     private Integer quantidadeEstoque;
 
-    public Filmes() {
+    public Filme() {
     }
 
-    public Filmes( String titulo, String genero, String diretor, Double duracaoMin, Integer faixaEtaria, String secao, String prateleira, Integer quantidadeEstoque) {
+    public Filme(String titulo, String genero, String diretor, Double duracaoMin, Integer faixaEtaria, String secao, String prateleira, Integer quantidadeEstoque) {
         this.titulo = titulo;
         this.genero = genero;
         this.diretor = diretor;

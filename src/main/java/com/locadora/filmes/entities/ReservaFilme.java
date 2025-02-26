@@ -3,7 +3,7 @@ package com.locadora.filmes.entities;
 import jakarta.persistence.*;
 
 @Entity
-public class ReservasFilmes {
+public class ReservaFilme {
 
     @Id
     @Column(name = "reserva_id")
@@ -21,42 +21,24 @@ public class ReservasFilmes {
 
     @JoinColumn(name = "filme_id")
     @OneToOne
-    private Id IdFilme;
+    private Filme idFilme;
 
     @JoinColumn(name = "cliente_id")
     @OneToMany
-    private Id idCliente;
+    private Cliente idCliente;
 
     @Column(name = "reservado")
     private Character reservado;
 
-    public ReservasFilmes() {
+    public ReservaFilme() {
     }
 
-    public ReservasFilmes(Id idFilme, Id idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva, Character reservado) {
-        IdFilme = idFilme;
+    public ReservaFilme(Id idFilme, Id idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva, Character reservado) {
         idCliente = idCliente;
         this.precoLocacao = precoLocacao;
         this.taxaLocacao = taxaLocacao;
         this.diasReserva = diasReserva;
         this.reservado = reservado;
-    }
-
-    public Id getIdFilme() {
-        return IdFilme;
-    }
-
-    public void setIdFilme(Id idFilme) {
-        IdFilme = idFilme;
-    }
-
-    public Id getIdCliente() {
-        return idCliente;
-
-    }
-
-    public void setIdCliente(Id idCliente) {
-        this.idCliente = idCliente;
     }
 
     public Double getPrecoLocacao() {
