@@ -34,9 +34,6 @@ public class Cliente {
     @Column(name = "filmes_locados_mes")
     private Integer filmesLocadosMes;
 
-    @Column(name = "filmes_reservados_mes")
-    private Integer filmesReservadosMes;
-
     public String getNome() {
         return nome;
     }
@@ -100,13 +97,6 @@ public class Cliente {
     public void setFilmesLocadosMes(Integer filmesLocadosMes) {
         this.filmesLocadosMes = filmesLocadosMes;
     }
-
-    public Integer getFilmesReservadosMes() {
-        return filmesReservadosMes;
-    }
-
-    public void setFilmesReservadosMes(Integer filmesReservadosMes) {
-        this.filmesReservadosMes = filmesReservadosMes;
-    }
 }
+
 

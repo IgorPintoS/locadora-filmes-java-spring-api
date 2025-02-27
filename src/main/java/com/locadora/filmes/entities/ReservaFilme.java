@@ -2,6 +2,8 @@ package com.locadora.filmes.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class ReservaFilme {
 
@@ -30,15 +32,19 @@ public class ReservaFilme {
     @Column(name = "reservado")
     private Character reservado;
 
+    @Column(name = "data_locacao")
+    private LocalDateTime dataLocacao;
+
     public ReservaFilme() {
     }
 
-    public ReservaFilme(Id idFilme, Id idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva, Character reservado) {
+    public ReservaFilme(Id idFilme, Id idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva, Character reservado, LocalDateTime dataLocacao) {
         idCliente = idCliente;
         this.precoLocacao = precoLocacao;
         this.taxaLocacao = taxaLocacao;
         this.diasReserva = diasReserva;
         this.reservado = reservado;
+        this.dataLocacao = dataLocacao;
     }
 
     public Double getPrecoLocacao() {
@@ -76,4 +82,8 @@ public class ReservaFilme {
     public void setReservado(Character reservado) {
         this.reservado = reservado;
     }
+
+    public LocalDateTime getDataLocacao() {return dataLocacao;}
+
+    public void setDataLocacao(LocalDateTime dataLocacao) {this.dataLocacao = dataLocacao;}
 }

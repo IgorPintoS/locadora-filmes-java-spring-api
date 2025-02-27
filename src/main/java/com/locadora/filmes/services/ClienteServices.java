@@ -31,14 +31,17 @@ public class ClienteServices {
     }
 
     @Transactional(readOnly = true)
-    public Cliente findById(Id idCliente) {
+    public Optional<Cliente> findById(Id idCliente) {
         Optional<Cliente> resultadoCliente = clienteRepository.findById(idCliente);
 
-        return clienteRepository.findById(idCliente)
-                .orElseThrow(() -> new ClienteNotFoundException("Não existem cliente com o Id " + idCliente));
+        if(resultadoCliente.isEmpty()) {
+            throw new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado.");
+        }
 
+        return resultadoCliente;
     }
 
+    @Transactional
     public void adicionarCliente(ClienteDTO clienteDTO) {
 
         String cpfCnpj = clienteDTO.CpfCnpj();
@@ -63,5 +66,43 @@ public class ClienteServices {
         cliente.setCpfCnpj(cpfCnpj);
 
         clienteRepository.save(cliente);
+    }
+
+    @Transactional
+    public void deletarCliente(Id idCliente){
+        if(!clienteRepository.existsById(idCliente)){
+            throw new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado.");
+        }
+
+        clienteRepository.deleteById(idCliente);
+
+    }
+
+    public void editarCliente(Id idCliente, ClienteDTO clienteDTO){
+        Cliente cliente = clienteRepository.findById(idCliente).
+                orElseThrow(() -> new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado."));
+
+        String cpfCnpj = clienteDTO.CpfCnpj();
+
+        if(!CpfCnpjFormatar.validarCpfCnpj(cpfCnpj)){
+            throw new CpfCnpjInvalidException("CPF/CNPJ com dígitos inválidos.");
+        }
+
+        CpfCnpjFormatar.formatarCpfCnpj(cpfCnpj);
+
+        if(clienteRepository.validaCpfCnpjExistente(cpfCnpj)) {
+            throw new CpfCnpjExistsException("Já existe um cadastro de cliente com o CPF/CNPJ: " + cpfCnpj + ".");
+        }
+
+        cliente.setNome(clienteDTO.nome());
+        cliente.setSobrenome(clienteDTO.sobrenome());
+        cliente.setIdade(clienteDTO.idade());
+        cliente.setEndereco(clienteDTO.endereco());
+        cliente.setBairro(clienteDTO.bairro());
+        cliente.setNumero(clienteDTO.numero());
+        cliente.setCpfCnpj(cpfCnpj);
+
+        clienteRepository.save(cliente);
+
     }
 }

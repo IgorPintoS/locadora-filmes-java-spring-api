@@ -7,6 +7,5 @@ public record ClienteDTO(String nome,
                          Integer numero,
                          String bairro,
                          String CpfCnpj,
-                         Integer filmesLocadosMes,
-                         Integer filmesReservadosMes) {
+                         Integer filmesLocadosMes) {
 }
