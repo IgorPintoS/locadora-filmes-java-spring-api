@@ -108,4 +108,12 @@ public class Filme {
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
+
+    public Integer getQuantidadeEstoque() {
+        return quantidadeEstoque;
+    }
+
+    public void setQuantidadeEstoque(Integer quantidadeEstoque) {
+        this.quantidadeEstoque = quantidadeEstoque;
+    }
 }

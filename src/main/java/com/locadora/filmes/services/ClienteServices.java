@@ -7,7 +7,6 @@ import com.locadora.filmes.exceptions.CpfCnpjExistsException;
 import com.locadora.filmes.exceptions.CpfCnpjInvalidException;
 import com.locadora.filmes.repository.ClienteRepository;
 import com.locadora.filmes.services.utility.CpfCnpjFormatar;
-import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +30,11 @@ public class ClienteServices {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Cliente> findById(Id idCliente) {
-        Optional<Cliente> resultadoCliente = clienteRepository.findById(idCliente);
+    public Optional<Cliente> findById(ClienteDTO clienteDTO) {
+        Optional<Cliente> resultadoCliente = clienteRepository.findById(clienteDTO.idCliente());
 
         if(resultadoCliente.isEmpty()) {
-            throw new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado.");
+            throw new ClienteNotFoundException("Cliente com o ID: " + clienteDTO.idCliente() + " não encontrado.");
         }
 
         return resultadoCliente;
@@ -69,18 +68,19 @@ public class ClienteServices {
     }
 
     @Transactional
-    public void deletarCliente(Id idCliente){
-        if(!clienteRepository.existsById(idCliente)){
-            throw new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado.");
+    public void deletarCliente(ClienteDTO clienteDTO){
+        if(!clienteRepository.existsById(clienteDTO.idCliente())){
+            throw new ClienteNotFoundException("Cliente com o ID: " + clienteDTO.idCliente() + " não encontrado.");
         }
 
-        clienteRepository.deleteById(idCliente);
+        clienteRepository.deleteById(clienteDTO.idCliente());
 
     }
 
-    public void editarCliente(Id idCliente, ClienteDTO clienteDTO){
-        Cliente cliente = clienteRepository.findById(idCliente).
-                orElseThrow(() -> new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado."));
+    @Transactional
+    public void editarCliente(ClienteDTO clienteDTO){
+        Cliente cliente = clienteRepository.findById(clienteDTO.idCliente()).
+                orElseThrow(() -> new ClienteNotFoundException("Cliente com o ID: " + clienteDTO.idCliente() + " não encontrado."));
 
         String cpfCnpj = clienteDTO.CpfCnpj();
 
