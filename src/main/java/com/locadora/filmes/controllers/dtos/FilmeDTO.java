@@ -1,8 +1,6 @@
 package com.locadora.filmes.controllers.dtos;
 
-import jakarta.persistence.Id;
-
-public record FilmeDTO(Id idFilme,
+public record FilmeDTO(Long idFilme,
                        String titulo,
                        Double duracaoMin,
                        String genero,

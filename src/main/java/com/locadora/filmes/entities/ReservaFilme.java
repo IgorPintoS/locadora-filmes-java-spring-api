@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 public class ReservaFilme {
 
     @Id
-    @Column(name = "reserva_id")
+    @Column(name = "id_reserva")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Id reservaId;
+    private Long idReserva;
 
     @Column(name = "reserva_dias")
     private Integer diasReserva;
@@ -22,12 +22,10 @@ public class ReservaFilme {
     private Double precoLocacao;
 
     @JoinColumn(name = "filme_id")
-    @OneToOne
-    private Filme idFilme;
+    private Long idFilme;
 
     @JoinColumn(name = "cliente_id")
-    @OneToMany
-    private Cliente idCliente;
+    private Long idCliente;
 
     @Column(name = "reservado")
     private Character reservado;
@@ -35,16 +33,25 @@ public class ReservaFilme {
     @Column(name = "data_locacao")
     private LocalDateTime dataLocacao;
 
+    @Column(name = "data_devolucao")
+    private LocalDateTime dataDevolucaoLocacao;
+
+    @Column(name = "status_locacao")
+    private char statusLocacao;
+
     public ReservaFilme() {
     }
 
-    public ReservaFilme(Id idFilme, Id idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva, Character reservado, LocalDateTime dataLocacao) {
-        idCliente = idCliente;
+    public ReservaFilme(Long idFilme, Long idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva, Character reservado, LocalDateTime dataLocacao, LocalDateTime dataDevolucaoLocacao, char statusLocacao) {
+        this.idCliente = idCliente;
+        this.idFilme = idFilme;
         this.precoLocacao = precoLocacao;
         this.taxaLocacao = taxaLocacao;
         this.diasReserva = diasReserva;
         this.reservado = reservado;
         this.dataLocacao = dataLocacao;
+        this.dataDevolucaoLocacao = dataDevolucaoLocacao;
+        this.statusLocacao = statusLocacao;
     }
 
     public Double getPrecoLocacao() {
@@ -71,8 +78,8 @@ public class ReservaFilme {
         this.diasReserva = diasReserva;
     }
 
-    public Id getReservaId() {
-        return reservaId;
+    public Long getIdReserva() {
+        return idReserva;
     }
 
     public Character getReservado() {
@@ -83,7 +90,44 @@ public class ReservaFilme {
         this.reservado = reservado;
     }
 
-    public LocalDateTime getDataLocacao() {return dataLocacao;}
+    public LocalDateTime getDataLocacao() {
+        return dataLocacao;
+    }
 
-    public void setDataLocacao(LocalDateTime dataLocacao) {this.dataLocacao = dataLocacao;}
+    public void setDataLocacao(LocalDateTime dataLocacao) {
+        this.dataLocacao = dataLocacao;
+    }
+
+    public LocalDateTime getDataDevolucaoLocacao() {
+        return dataDevolucaoLocacao;
+    }
+
+    public void setDataDevolucaoLocacao(LocalDateTime dataDevolucaoLocacao) {
+        this.dataDevolucaoLocacao = dataDevolucaoLocacao;
+    }
+
+    public char getStatusLocacao() {
+        return statusLocacao;
+    }
+
+    public void setStatusLocacao(char statusLocacao) {
+        this.statusLocacao = statusLocacao;
+    }
+
+    public Long getIdFilme() {
+        return idFilme;
+    }
+
+    public void setIdFilme(Long idFilme) {
+        this.idFilme = idFilme;
+    }
+
+    public Long getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(Long idCliente) {
+        this.idCliente = idCliente;
+
+    }
 }

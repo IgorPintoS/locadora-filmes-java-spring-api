@@ -8,7 +8,7 @@ public class Cliente {
     @Id
     @Column(name = "cliente_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Id idCliente;
+    private Long idCliente;
 
     @Column(name = "nome")
     private String nome;
@@ -29,10 +29,28 @@ public class Cliente {
     private String bairro;
 
     @Column(name = "cpf_cnpj")
-    private String CpfCnpj;
+    private String cpfCnpj;
 
     @Column(name = "filmes_locados_mes")
     private Integer filmesLocadosMes;
+
+    public Cliente() {
+    }
+
+    public Cliente(String nome, String sobrenome, Integer idade, String endereco, Integer numero, String bairro, String cpfCnpj, Integer filmesLocadosMes) {
+        this.nome = nome;
+        this.sobrenome = sobrenome;
+        this.idade = idade;
+        this.endereco = endereco;
+        this.numero = numero;
+        this.bairro = bairro;
+        this.cpfCnpj = cpfCnpj;
+        this.filmesLocadosMes = filmesLocadosMes;
+    }
+
+    public Long getIdCliente(){
+        return idCliente;
+    }
 
     public String getNome() {
         return nome;
@@ -83,11 +101,11 @@ public class Cliente {
     }
 
     public String getCpfCnpj() {
-        return CpfCnpj;
+        return cpfCnpj;
     }
 
     public void setCpfCnpj(String cpfCnpj) {
-        CpfCnpj = cpfCnpj;
+        this.cpfCnpj = cpfCnpj;
     }
 
     public Integer getFilmesLocadosMes() {

@@ -9,7 +9,7 @@ public class Filme {
     @Id
     @Column(name = "filme_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Id idFilme;
+    private Long idFilme;
 
     @Column(name = "titulo")
     private String titulo;
@@ -49,7 +49,7 @@ public class Filme {
         this.quantidadeEstoque = quantidadeEstoque;
     }
 
-    public Id getIdFilme() {
+    public Long getIdFilme() {
         return idFilme;
     }
 

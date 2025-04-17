@@ -6,6 +6,7 @@ import com.locadora.filmes.exceptions.FilmeExistsException;
 import com.locadora.filmes.exceptions.FilmeNotFoundException;
 import com.locadora.filmes.exceptions.FilmeQuantityInvalidException;
 import com.locadora.filmes.repository.FilmeRepository;
+import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +32,11 @@ public class FilmeServices {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Filme> findBydId(FilmeDTO filmeDTO){
-        Optional<Filme> resultadoFilme = filmeRepository.findById(filmeDTO.idFilme());
+    public Optional<Filme> findBydId(Long idFilme){
+        Optional<Filme> resultadoFilme = filmeRepository.findById(idFilme);
 
         if(resultadoFilme.isEmpty()) {
-            throw new FilmeNotFoundException("Filme com o ID: " + filmeDTO.idFilme() + " não encontrado.");
+            throw new FilmeNotFoundException("Filme com o ID: " + idFilme + " não encontrado.");
         }
 
         return resultadoFilme;
@@ -46,7 +47,7 @@ public class FilmeServices {
 
         String filmeExistente = filmeDTO.titulo();
 
-        if(filmeRepository.validaFilmeExistente(filmeExistente)) {
+        if(filmeRepository.existsByTitulo(filmeExistente)) {
             throw new FilmeExistsException("Já existe um filme cadastrado com o título " + filmeExistente + ".");
         }
 
@@ -61,12 +62,12 @@ public class FilmeServices {
     }
 
     @Transactional
-    public void deletarFilme(FilmeDTO filmeDTO){
-        if(!filmeRepository.existsById(filmeDTO.idFilme())) {
-            throw new FilmeExistsException("Filme com o ID: " + filmeDTO.idFilme() + " não encontrado.");
+    public void deletarFilme(Long idFilme){
+        if(!filmeRepository.existsById(idFilme)) {
+            throw new FilmeExistsException("Filme com o ID: " + idFilme + " não encontrado.");
         }
 
-        filmeRepository.deleteById(filmeDTO.idFilme());
+        filmeRepository.deleteById(idFilme);
     }
 
     @Transactional
@@ -76,7 +77,7 @@ public class FilmeServices {
 
         String filmeExistente = filmeDTO.titulo();
 
-        if(filmeRepository.validaFilmeExistente(filmeExistente)) {
+        if(filmeRepository.existsByTitulo(filmeExistente)) {
             throw new FilmeExistsException("Já existe um filme cadastrado com o título " + filmeExistente + ".");
         }
 
