@@ -39,10 +39,15 @@ public class ReservaFilme {
     @Column(name = "status_locacao")
     private char statusLocacao;
 
+    @Column(name = "filme_devolvido")
+    private boolean filmeDevolvido;
+
     public ReservaFilme() {
     }
 
-    public ReservaFilme(Long idFilme, Long idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva, Character reservado, LocalDateTime dataLocacao, LocalDateTime dataDevolucaoLocacao, char statusLocacao) {
+    public ReservaFilme(Long idFilme, Long idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva,
+                        Character reservado, LocalDateTime dataLocacao, LocalDateTime dataDevolucaoLocacao,
+                        char statusLocacao, boolean filmeDevolvido) {
         this.idCliente = idCliente;
         this.idFilme = idFilme;
         this.precoLocacao = precoLocacao;
@@ -52,6 +57,7 @@ public class ReservaFilme {
         this.dataLocacao = dataLocacao;
         this.dataDevolucaoLocacao = dataDevolucaoLocacao;
         this.statusLocacao = statusLocacao;
+        this.filmeDevolvido = filmeDevolvido;
     }
 
     public Double getPrecoLocacao() {
@@ -130,4 +136,13 @@ public class ReservaFilme {
         this.idCliente = idCliente;
 
     }
+    public boolean getFilmeDevolvido() {
+        return filmeDevolvido;
+    }
+
+    public void setFilmeDevolvido(boolean filmeDevolvido) {
+        this.filmeDevolvido = filmeDevolvido;
+
+    }
+
 }
