@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class ReservaFilmeServices {
@@ -81,9 +82,19 @@ public class ReservaFilmeServices {
     reservaFilme.setReservado('S');
     reservaFilme.setStatusLocacao('A');
 
+    int filmesPorCliente = reservasPorCliente(reservaFilme.getIdCliente());
+
+    if(filmesPorCliente > 0){
+        cliente.setFilmesLocadosMes(cliente.getFilmesLocadosMes() + 1);
+    } else {
+        cliente.setFilmesLocadosMes(1);
+    }
+
+    clienteRepository.save(cliente);
     reservaFilmeRepository.save(reservaFilme);
     }
 
+    @Transactional
     public void finalizarReservaFilme(Long idReserva) {
         ReservaFilme reservaFilme = reservaFilmeRepository.findById(idReserva)
                 .orElseThrow(() -> new FilmeNotFoundException("Reserva com o ID " + idReserva
@@ -141,5 +152,16 @@ public class ReservaFilmeServices {
         reservaFilme.setStatusLocacao('I');
 
         reservaFilmeRepository.save(reservaFilme);
+    }
+
+    public int reservasPorCliente(Long idCliente){
+        List<ReservaFilme> listaReservaFilmes = reservaFilmeRepository.findAll();
+        
+        AtomicInteger contadorFilmes = new AtomicInteger();
+
+        listaReservaFilmes.stream().filter(reservaFilme -> reservaFilme.getIdCliente().equals(idCliente))
+                .forEach(reservaFilme -> contadorFilmes.getAndIncrement());
+
+        return contadorFilmes.get();
     }
 }
