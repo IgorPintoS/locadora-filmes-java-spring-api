@@ -39,7 +39,7 @@ public class ClienteServices {
     @Transactional
     public void adicionarCliente(ClienteDTO clienteDTO) {
 
-        String cpfCnpj = clienteDTO.CpfCnpj();
+        String cpfCnpj = clienteDTO.cpfCnpj();
 
         if(!CpfCnpjFormatar.validarCpfCnpj(cpfCnpj)){
             throw new CpfCnpjInvalidException("CPF/CNPJ com dígitos inválidos.");
@@ -78,7 +78,7 @@ public class ClienteServices {
         Cliente cliente = clienteRepository.findById(idCliente).
                 orElseThrow(() -> new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado."));
 
-        String cpfCnpj = clienteDTO.CpfCnpj();
+        String cpfCnpj = clienteDTO.cpfCnpj();
 
         if(!CpfCnpjFormatar.validarCpfCnpj(cpfCnpj)){
             throw new CpfCnpjInvalidException("CPF/CNPJ com dígitos inválidos.");

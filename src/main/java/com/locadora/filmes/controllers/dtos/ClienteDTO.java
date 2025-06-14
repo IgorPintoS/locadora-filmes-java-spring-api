@@ -7,6 +7,6 @@ public record ClienteDTO(Long idCliente,
                          String endereco,
                          Integer numero,
                          String bairro,
-                         String CpfCnpj,
+                         String cpfCnpj,
                          Integer filmesLocadosMes) {
 }

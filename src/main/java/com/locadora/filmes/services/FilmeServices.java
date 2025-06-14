@@ -6,7 +6,6 @@ import com.locadora.filmes.exceptions.FilmeExistsException;
 import com.locadora.filmes.exceptions.FilmeNotFoundException;
 import com.locadora.filmes.exceptions.FilmeQuantityInvalidException;
 import com.locadora.filmes.repository.FilmeRepository;
-import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
