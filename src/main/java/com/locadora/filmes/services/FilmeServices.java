@@ -31,77 +31,72 @@ public class FilmeServices {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Filme> findBydId(Long idFilme){
-        Optional<Filme> resultadoFilme = filmeRepository.findById(idFilme);
+    public Filme findBydId(Long idFilme){
+        Filme filme = filmeRepository.findById(idFilme)
+                .orElseThrow(() -> new FilmeNotFoundException("Filme com o ID: " + idFilme + " não encontrado."));
 
-        if(resultadoFilme.isEmpty()) {
-            throw new FilmeNotFoundException("Filme com o ID: " + idFilme + " não encontrado.");
-        }
-
-        return resultadoFilme;
+        return filme;
     }
 
     @Transactional
-    public void adicionarFilme(FilmeDTO filmeDTO){
+    public void adicionarFilme(Filme filmeNovo){
+        String filmeExistente = filmeNovo.getTitulo();
 
-        String filmeExistente = filmeDTO.titulo();
-
-        if(filmeRepository.existsByTitulo(filmeExistente)) {
-            throw new FilmeExistsException("Já existe um filme cadastrado com o título " + filmeExistente + ".");
-        }
+        this.verificarTituloFilmeExistente(filmeExistente);
 
         Filme filme = new Filme();
         filme.setTitulo(filmeExistente);
-        filme.setDiretor(filmeDTO.diretor());
-        filme.setGenero(filmeDTO.genero());
-        filme.setDuracaoMin(filmeDTO.duracaoMin());
-        filme.setFaixaEtaria(filmeDTO.faixaEtaria());
+        filme.setDiretor(filmeNovo.getDiretor());
+        filme.setGenero(filmeNovo.getGenero());
+        filme.setDuracaoMin(filmeNovo.getDuracaoMin());
+        filme.setFaixaEtaria(filmeNovo.getFaixaEtaria());
 
         filmeRepository.save(filme);
     }
 
     @Transactional
     public void deletarFilme(Long idFilme){
-        if(!filmeRepository.existsById(idFilme)) {
-            throw new FilmeExistsException("Filme com o ID: " + idFilme + " não encontrado.");
-        }
+        this.findBydId(idFilme);
 
         filmeRepository.deleteById(idFilme);
     }
 
     @Transactional
-    public void editarFilme(FilmeDTO filmeDTO){
-        Filme filme = filmeRepository.findById(filmeDTO.idFilme())
-                .orElseThrow(() -> new FilmeNotFoundException("Filme com o ID: " + filmeDTO.idFilme() + " não encontrado."));
+    public void editarFilme(Filme filmeAtualizado, Long idFilme){
+        Filme filme = this.findBydId(idFilme);
 
-        String filmeExistente = filmeDTO.titulo();
+        String filmeExistente = filmeAtualizado.getTitulo();
 
-        if(filmeRepository.existsByTitulo(filmeExistente)) {
-            throw new FilmeExistsException("Já existe um filme cadastrado com o título " + filmeExistente + ".");
-        }
+        this.verificarTituloFilmeExistente(filmeExistente);
 
         filme.setTitulo(filmeExistente);
-        filme.setDiretor(filmeDTO.diretor());
-        filme.setGenero(filmeDTO.genero());
-        filme.setDuracaoMin(filmeDTO.duracaoMin());
-        filme.setFaixaEtaria(filmeDTO.faixaEtaria());
+        filme.setDiretor(filmeAtualizado.getDiretor());
+        filme.setGenero(filmeAtualizado.getGenero());
+        filme.setDuracaoMin(filmeAtualizado.getDuracaoMin());
+        filme.setFaixaEtaria(filmeAtualizado.getFaixaEtaria());
+
+        filmeRepository.save(filme);
+    }
+
+    @Transactional
+    public void adicionarEstoqueFilme(Long idFilme, Integer quantidade){
+        Filme filme = this.findBydId(idFilme);
+
+        if(quantidade < 0) {
+            throw new FilmeQuantityInvalidException("Quantidade informada é inválida, precisa ser maior que zero.");
+        }
+
+        filme.setQuantidadeEstoque(quantidade);
 
         filmeRepository.save(filme);
 
     }
 
-    @Transactional
-    public void adicionarEstoqueFilme(FilmeDTO filmeDTO){
-        Filme filme = filmeRepository.findById(filmeDTO.idFilme())
-                .orElseThrow(() -> new FilmeNotFoundException("Filme com o ID: " + filmeDTO.idFilme() + " não encontrado."));
+    private void verificarTituloFilmeExistente(String titulo) {
+        filmeRepository.existsByTitulo(titulo);
 
-        if(filmeDTO.quantidadeEstoque() < 0) {
-            throw new FilmeQuantityInvalidException("Quantidade informada é inválida, precisa ser maior que zero.");
+        if (titulo.isEmpty()) {
+            throw new FilmeExistsException("Já existe um filme cadastrado com o título " + titulo + ".");
         }
-
-        filme.setQuantidadeEstoque(filmeDTO.quantidadeEstoque());
-
-        filmeRepository.save(filme);
-
     }
 }

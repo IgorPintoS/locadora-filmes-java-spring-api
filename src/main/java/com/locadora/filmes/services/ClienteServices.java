@@ -37,9 +37,8 @@ public class ClienteServices {
     }
 
     @Transactional
-    public void adicionarCliente(ClienteDTO clienteDTO) {
-
-        String cpfCnpj = clienteDTO.cpfCnpj();
+    public void adicionarCliente(Cliente novoCliente) {
+        String cpfCnpj = novoCliente.getCpfCnpj();
 
         if(!CpfCnpjFormatar.validarCpfCnpj(cpfCnpj)){
             throw new CpfCnpjInvalidException("CPF/CNPJ com dígitos inválidos.");
@@ -52,12 +51,12 @@ public class ClienteServices {
         }
 
         Cliente cliente = new Cliente();
-        cliente.setNome(clienteDTO.nome());
-        cliente.setSobrenome(clienteDTO.sobrenome());
-        cliente.setIdade(clienteDTO.idade());
-        cliente.setEndereco(clienteDTO.endereco());
-        cliente.setBairro(clienteDTO.bairro());
-        cliente.setNumero(clienteDTO.numero());
+        cliente.setNome(novoCliente.getNome());
+        cliente.setSobrenome(novoCliente.getSobrenome());
+        cliente.setIdade(novoCliente.getIdade());
+        cliente.setEndereco(novoCliente.getEndereco());
+        cliente.setBairro(novoCliente.getBairro());
+        cliente.setNumero(novoCliente.getNumero());
         cliente.setCpfCnpj(cpfCnpj);
 
         clienteRepository.save(cliente);
@@ -65,20 +64,16 @@ public class ClienteServices {
 
     @Transactional
     public void deletarCliente(Long idCliente){
-        if(!clienteRepository.existsById(idCliente)){
-            throw new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado.");
-        }
+        this.findById(idCliente);
 
         clienteRepository.deleteById(idCliente);
-
     }
 
     @Transactional
-    public void editarCliente(ClienteDTO clienteDTO, Long idCliente){
-        Cliente cliente = clienteRepository.findById(idCliente).
-                orElseThrow(() -> new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado."));
+    public void editarCliente(Cliente clienteAtualizado, Long idCliente){
+        Cliente cliente = this.findById(idCliente);
 
-        String cpfCnpj = clienteDTO.cpfCnpj();
+        String cpfCnpj = clienteAtualizado.getCpfCnpj();
 
         if(!CpfCnpjFormatar.validarCpfCnpj(cpfCnpj)){
             throw new CpfCnpjInvalidException("CPF/CNPJ com dígitos inválidos.");
@@ -90,15 +85,14 @@ public class ClienteServices {
             throw new CpfCnpjExistsException("Já existe um cadastro de cliente com o CPF/CNPJ: " + cpfCnpj + ".");
         }
 
-        cliente.setNome(clienteDTO.nome());
-        cliente.setSobrenome(clienteDTO.sobrenome());
-        cliente.setIdade(clienteDTO.idade());
-        cliente.setEndereco(clienteDTO.endereco());
-        cliente.setBairro(clienteDTO.bairro());
-        cliente.setNumero(clienteDTO.numero());
+        cliente.setNome(clienteAtualizado.getNome());
+        cliente.setSobrenome(clienteAtualizado.getSobrenome());
+        cliente.setIdade(clienteAtualizado.getIdade());
+        cliente.setEndereco(clienteAtualizado.getEndereco());
+        cliente.setBairro(clienteAtualizado.getBairro());
+        cliente.setNumero(clienteAtualizado.getNumero());
         cliente.setCpfCnpj(cpfCnpj);
 
         clienteRepository.save(cliente);
-
     }
 }

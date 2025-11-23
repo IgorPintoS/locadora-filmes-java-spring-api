@@ -22,9 +22,11 @@ public class ReservaFilme {
     private Double precoLocacao;
 
     @JoinColumn(name = "filme_id")
+    @OneToOne
     private Long idFilme;
 
     @JoinColumn(name = "cliente_id")
+    @OneToMany
     private Long idCliente;
 
     @Column(name = "reservado")
