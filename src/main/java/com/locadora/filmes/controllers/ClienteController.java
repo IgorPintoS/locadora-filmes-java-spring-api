@@ -20,25 +20,38 @@ public class ClienteController {
     private ClienteServices clienteServices;
 
     @GetMapping(value = "/{idCliente}")
-    public Cliente findById(@PathVariable Long idCliente){
-        Cliente cliente = clienteServices.findById(idCliente);
-        return cliente;
+    public ResponseEntity<ClienteDTO> findById(@PathVariable Long idCliente){
+        ClienteDTO clienteDTO = clienteServices.findById(idCliente);
+
+        return ResponseEntity.ok().body(clienteDTO);
     }
 
     @GetMapping
-    public List<Cliente> findAll(){
-        List<Cliente> listaClientes = clienteServices.findAll();
-        return listaClientes;
+    public ResponseEntity<List<ClienteDTO>> findAll(){
+        List<ClienteDTO> listaClientesDTO = clienteServices.findAll();
+
+        return ResponseEntity.ok().body(listaClientesDTO);
     }
 
     @PostMapping
-    public ResponseEntity<?> adicionarCliente(@RequestBody ClienteDTO clienteDTO) {
-        try {
-            clienteServices.adicionarCliente(clienteDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (CpfCnpjInvalidException | CpfCnpjExistsException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ClienteDTO> adicionarCliente(@RequestBody ClienteDTO novoClienteDTO) {
+        ClienteDTO clienteDTO = clienteServices.adicionarCliente(novoClienteDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteDTO);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deletarCliente(@PathVariable Long idCliente) {
+        clienteServices.deletarCliente(idCliente);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<ClienteDTO> atualizarCliente(@PathVariable Long idCliente, @RequestBody ClienteDTO clienteAtualizadoDTO) {
+        ClienteDTO clienteDTO = clienteServices.editarCliente(clienteAtualizadoDTO, idCliente);
+
+        return ResponseEntity.ok().body(clienteDTO);
     }
 }
 

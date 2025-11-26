@@ -9,4 +9,5 @@ public record ClienteDTO(Long idCliente,
                          String bairro,
                          String cpfCnpj,
                          Integer filmesLocadosMes) {
+
 }

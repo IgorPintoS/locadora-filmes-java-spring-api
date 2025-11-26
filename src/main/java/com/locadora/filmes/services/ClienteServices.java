@@ -7,38 +7,46 @@ import com.locadora.filmes.exceptions.CpfCnpjExistsException;
 import com.locadora.filmes.exceptions.CpfCnpjInvalidException;
 import com.locadora.filmes.repository.ClienteRepository;
 import com.locadora.filmes.services.utility.CpfCnpjFormatar;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteServices {
 
     @Autowired
     private ClienteRepository clienteRepository;
+    ModelMapper modelMapper = new ModelMapper();
 
     @Transactional(readOnly = true)
-    public List<Cliente> findAll() {
+    public List<ClienteDTO> findAll() {
         List<Cliente> listaClientes = clienteRepository.findAll();
 
-        if (listaClientes.isEmpty()) {
-            throw new ClienteNotFoundException("Não existem clientes cadastrados.");
-        }
-        return listaClientes;
+        List<ClienteDTO> clienteDTOList = listaClientes
+                .stream()
+                .map(cliente -> modelMapper.map(cliente, ClienteDTO.class))
+                .toList();
+
+        return clienteDTOList;
     }
 
     @Transactional(readOnly = true)
-    public Cliente findById(Long idCliente) {
-        Cliente cliente = clienteRepository.findById(idCliente).
-                orElseThrow(() -> new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado."));
+    public ClienteDTO findById(Long idCliente) {
+        Cliente cliente = clienteRepository.findById(idCliente)
+                .orElseThrow(() -> new ClienteNotFoundException("Cliente com o ID: " + idCliente + " não encontrado."));
 
-        return cliente;
+        ClienteDTO clienteDTO = modelMapper.map(cliente, ClienteDTO.class);
+
+        return clienteDTO;
     }
 
     @Transactional
-    public void adicionarCliente(Cliente novoCliente) {
-        String cpfCnpj = novoCliente.getCpfCnpj();
+    public ClienteDTO adicionarCliente(ClienteDTO novoClienteDTO) {
+        String cpfCnpj = novoClienteDTO.cpfCnpj();
 
         if(!CpfCnpjFormatar.validarCpfCnpj(cpfCnpj)){
             throw new CpfCnpjInvalidException("CPF/CNPJ com dígitos inválidos.");
@@ -46,20 +54,26 @@ public class ClienteServices {
 
         CpfCnpjFormatar.formatarCpfCnpj(cpfCnpj);
 
-        if(clienteRepository.existsByCpfCnpj(cpfCnpj)) {
+        Optional<Cliente> clienteCpfCnpj = clienteRepository.existsByCpfCnpj(cpfCnpj);
+
+        if(clienteCpfCnpj.isPresent()) {
             throw new CpfCnpjExistsException("Já existe um cadastro de cliente com o CPF/CNPJ: " + cpfCnpj + ".");
         }
 
         Cliente cliente = new Cliente();
-        cliente.setNome(novoCliente.getNome());
-        cliente.setSobrenome(novoCliente.getSobrenome());
-        cliente.setIdade(novoCliente.getIdade());
-        cliente.setEndereco(novoCliente.getEndereco());
-        cliente.setBairro(novoCliente.getBairro());
-        cliente.setNumero(novoCliente.getNumero());
+        cliente.setNome(novoClienteDTO.nome());
+        cliente.setSobrenome(novoClienteDTO.sobrenome());
+        cliente.setIdade(novoClienteDTO.idade());
+        cliente.setEndereco(novoClienteDTO.endereco());
+        cliente.setBairro(novoClienteDTO.bairro());
+        cliente.setNumero(novoClienteDTO.numero());
         cliente.setCpfCnpj(cpfCnpj);
 
         clienteRepository.save(cliente);
+
+        ClienteDTO clienteDTO = modelMapper.map(cliente, ClienteDTO.class);
+
+        return clienteDTO;
     }
 
     @Transactional
@@ -70,10 +84,10 @@ public class ClienteServices {
     }
 
     @Transactional
-    public void editarCliente(Cliente clienteAtualizado, Long idCliente){
-        Cliente cliente = this.findById(idCliente);
+    public ClienteDTO editarCliente(ClienteDTO clienteAtualizadoDTO, Long idCliente){
+        Optional<Cliente> cliente = clienteRepository.findById(idCliente);
 
-        String cpfCnpj = clienteAtualizado.getCpfCnpj();
+        String cpfCnpj = clienteAtualizadoDTO.cpfCnpj();
 
         if(!CpfCnpjFormatar.validarCpfCnpj(cpfCnpj)){
             throw new CpfCnpjInvalidException("CPF/CNPJ com dígitos inválidos.");
@@ -81,18 +95,18 @@ public class ClienteServices {
 
         CpfCnpjFormatar.formatarCpfCnpj(cpfCnpj);
 
-        if(clienteRepository.existsByCpfCnpj(cpfCnpj)) {
+        Optional<Cliente> clienteCpfCnpj = clienteRepository.existsByCpfCnpj(cpfCnpj);
+
+        if(clienteCpfCnpj.isPresent() && !clienteCpfCnpj.get().getIdCliente().equals(cliente.get().getIdCliente())) {
             throw new CpfCnpjExistsException("Já existe um cadastro de cliente com o CPF/CNPJ: " + cpfCnpj + ".");
         }
 
-        cliente.setNome(clienteAtualizado.getNome());
-        cliente.setSobrenome(clienteAtualizado.getSobrenome());
-        cliente.setIdade(clienteAtualizado.getIdade());
-        cliente.setEndereco(clienteAtualizado.getEndereco());
-        cliente.setBairro(clienteAtualizado.getBairro());
-        cliente.setNumero(clienteAtualizado.getNumero());
-        cliente.setCpfCnpj(cpfCnpj);
+        Cliente clienteSalvo = cliente.get();
+        modelMapper.map(clienteAtualizadoDTO, clienteSalvo);
+        clienteSalvo.setCpfCnpj(cpfCnpj);
 
-        clienteRepository.save(cliente);
+        clienteRepository.save(clienteSalvo);
+
+        return modelMapper.map(clienteSalvo, ClienteDTO.class);
     }
 }
