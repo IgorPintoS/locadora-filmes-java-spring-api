@@ -19,35 +19,35 @@ public class ClienteController {
     @Autowired
     private ClienteServices clienteServices;
 
-    @GetMapping(value = "/{idCliente}")
+    @GetMapping("/clientes/{idCliente}")
     public ResponseEntity<ClienteDTO> findById(@PathVariable Long idCliente){
         ClienteDTO clienteDTO = clienteServices.findById(idCliente);
 
         return ResponseEntity.ok().body(clienteDTO);
     }
 
-    @GetMapping
+    @GetMapping("/clientes")
     public ResponseEntity<List<ClienteDTO>> findAll(){
         List<ClienteDTO> listaClientesDTO = clienteServices.findAll();
 
         return ResponseEntity.ok().body(listaClientesDTO);
     }
 
-    @PostMapping
+    @PostMapping("/clientes")
     public ResponseEntity<ClienteDTO> adicionarCliente(@RequestBody ClienteDTO novoClienteDTO) {
         ClienteDTO clienteDTO = clienteServices.adicionarCliente(novoClienteDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteDTO);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/clientes/{idCliente}")
     public ResponseEntity<Void> deletarCliente(@PathVariable Long idCliente) {
         clienteServices.deletarCliente(idCliente);
 
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping
+    @PutMapping("/clientes/{idCliente}")
     public ResponseEntity<ClienteDTO> atualizarCliente(@PathVariable Long idCliente, @RequestBody ClienteDTO clienteAtualizadoDTO) {
         ClienteDTO clienteDTO = clienteServices.editarCliente(clienteAtualizadoDTO, idCliente);
 

@@ -22,12 +22,12 @@ public class ReservaFilme {
     private Double precoLocacao;
 
     @JoinColumn(name = "filme_id")
-    @OneToOne
-    private Long idFilme;
+    @ManyToOne
+    private Filme filme;
 
     @JoinColumn(name = "cliente_id")
-    @OneToMany
-    private Long idCliente;
+    @ManyToMany
+    private Cliente cliente;
 
     @Column(name = "reservado")
     private Character reservado;
@@ -47,11 +47,11 @@ public class ReservaFilme {
     public ReservaFilme() {
     }
 
-    public ReservaFilme(Long idFilme, Long idCliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva,
+    public ReservaFilme(Filme filme, Cliente cliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva,
                         Character reservado, LocalDateTime dataLocacao, LocalDateTime dataDevolucaoLocacao,
                         char statusLocacao, boolean filmeDevolvido) {
-        this.idCliente = idCliente;
-        this.idFilme = idFilme;
+        this.cliente = cliente;
+        this.filme = filme;
         this.precoLocacao = precoLocacao;
         this.taxaLocacao = taxaLocacao;
         this.diasReserva = diasReserva;
@@ -122,20 +122,20 @@ public class ReservaFilme {
         this.statusLocacao = statusLocacao;
     }
 
-    public Long getIdFilme() {
-        return idFilme;
+    public Filme getFilme() {
+        return filme;
     }
 
-    public void setIdFilme(Long idFilme) {
-        this.idFilme = idFilme;
+    public void setFilme(Filme filme) {
+        this.filme = filme;
     }
 
-    public Long getIdCliente() {
-        return idCliente;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setIdCliente(Long idCliente) {
-        this.idCliente = idCliente;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
 
     }
     public boolean getFilmeDevolvido() {

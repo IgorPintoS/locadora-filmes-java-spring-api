@@ -57,17 +57,17 @@ public class ReservaFilmeServices {
     @Transactional
     public void adicionarReservaFilme(ReservaFilmeDTO reservaFilmeDTO) {
 
-    Filme filme = filmeRepository.findById(reservaFilmeDTO.idFilme().getIdFilme())
-            .orElseThrow(() -> new FilmeNotFoundException("Filme com ID " + reservaFilmeDTO.idFilme()
+    filmeRepository.findById(reservaFilmeDTO.filme().getIdFilme())
+            .orElseThrow(() -> new FilmeNotFoundException("Filme com ID " + reservaFilmeDTO.filme().getIdFilme()
     + " não encontrado."));
 
-    Cliente cliente = clienteRepository.findById(reservaFilmeDTO.idCliente().getIdCliente())
-            .orElseThrow(() -> new ClienteNotFoundException("Cliente com ID " + reservaFilmeDTO.idCliente()
+    Cliente cliente = clienteRepository.findById(reservaFilmeDTO.cliente().getIdCliente())
+            .orElseThrow(() -> new ClienteNotFoundException("Cliente com ID " + reservaFilmeDTO.cliente().getIdCliente()
     + " não encontrado."));
 
     ReservaFilme reservaFilme = new ReservaFilme();
-    reservaFilme.setIdFilme(filme.getIdFilme());
-    reservaFilme.setIdCliente(cliente.getIdCliente());
+    reservaFilme.setFilme(reservaFilme.getFilme());
+    reservaFilme.setCliente(reservaFilme.getCliente());
     reservaFilme.setDataLocacao(LocalDateTime.now());
     reservaFilme.setDiasReserva(reservaFilmeDTO.diasReserva());
     reservaFilme.setReservado(reservaFilmeDTO.reservado());
@@ -82,7 +82,7 @@ public class ReservaFilmeServices {
     reservaFilme.setReservado('S');
     reservaFilme.setStatusLocacao('A');
 
-    int filmesPorCliente = reservasPorCliente(reservaFilme.getIdCliente());
+    int filmesPorCliente = reservasPorCliente(reservaFilme.getCliente().getIdCliente());
 
     if(filmesPorCliente > 0){
         cliente.setFilmesLocadosMes(cliente.getFilmesLocadosMes() + 1);
@@ -154,12 +154,19 @@ public class ReservaFilmeServices {
         reservaFilmeRepository.save(reservaFilme);
     }
 
-    public int reservasPorCliente(Long idCliente){
+    @Transactional
+    public boolean filmeReservado(Filme filme) {
+        boolean existe = reservaFilmeRepository.existsIdFilme(filme.getIdFilme());
+
+        return existe;
+    }
+
+    private int reservasPorCliente(Long idCliente){
         List<ReservaFilme> listaReservaFilmes = reservaFilmeRepository.findAll();
         
         AtomicInteger contadorFilmes = new AtomicInteger();
 
-        listaReservaFilmes.stream().filter(reservaFilme -> reservaFilme.getIdCliente().equals(idCliente))
+        listaReservaFilmes.stream().filter(reservaFilme -> reservaFilme.getCliente().getIdCliente().equals(idCliente))
                 .forEach(reservaFilme -> contadorFilmes.getAndIncrement());
 
         return contadorFilmes.get();
