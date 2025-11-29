@@ -136,15 +136,14 @@ public class ReservaFilme {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
-
     }
+
     public boolean getFilmeDevolvido() {
         return filmeDevolvido;
     }
 
     public void setFilmeDevolvido(boolean filmeDevolvido) {
         this.filmeDevolvido = filmeDevolvido;
-
     }
 
 }

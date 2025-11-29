@@ -32,12 +32,12 @@ public class Cliente {
     private String cpfCnpj;
 
     @Column(name = "filmes_locados_mes")
-    private Integer filmesLocadosMes;
+    private Integer filmesLocados;
 
     public Cliente() {
     }
 
-    public Cliente(String nome, String sobrenome, Integer idade, String endereco, Integer numero, String bairro, String cpfCnpj, Integer filmesLocadosMes) {
+    public Cliente(String nome, String sobrenome, Integer idade, String endereco, Integer numero, String bairro, String cpfCnpj, Integer filmesLocados) {
         this.nome = nome;
         this.sobrenome = sobrenome;
         this.idade = idade;
@@ -45,7 +45,7 @@ public class Cliente {
         this.numero = numero;
         this.bairro = bairro;
         this.cpfCnpj = cpfCnpj;
-        this.filmesLocadosMes = filmesLocadosMes;
+        this.filmesLocados = filmesLocados;
     }
 
     public Long getIdCliente(){
@@ -108,12 +108,12 @@ public class Cliente {
         this.cpfCnpj = cpfCnpj;
     }
 
-    public Integer getFilmesLocadosMes() {
-        return filmesLocadosMes;
+    public Integer getFilmesLocados() {
+        return filmesLocados;
     }
 
-    public void setFilmesLocadosMes(Integer filmesLocadosMes) {
-        this.filmesLocadosMes = filmesLocadosMes;
+    public void setFilmesLocados(Integer filmesLocados) {
+        this.filmesLocados = filmesLocados;
     }
 }
 

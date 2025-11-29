@@ -43,10 +43,13 @@ public class Filme {
     @OneToMany
     private ReservaFilme reservaFilme;
 
+    @Column(name = "locado")
+    private boolean locado;
+
     public Filme() {
     }
 
-    public Filme(String titulo, String genero, String diretor, Double duracaoMin, Integer faixaEtaria, String secao, String prateleira, Integer quantidadeEstoque) {
+    public Filme(String titulo, String genero, String diretor, Double duracaoMin, Integer faixaEtaria, String secao, String prateleira, Integer quantidadeEstoque, boolean locado) {
         this.titulo = titulo;
         this.genero = genero;
         this.diretor = diretor;
@@ -55,6 +58,7 @@ public class Filme {
         this.secao = secao;
         this.prateleira = prateleira;
         this.quantidadeEstoque = quantidadeEstoque;
+        this.locado = locado;
     }
 
     public Long getIdFilme() {
@@ -123,5 +127,13 @@ public class Filme {
 
     public void setQuantidadeEstoque(Integer quantidadeEstoque) {
         this.quantidadeEstoque = quantidadeEstoque;
+    }
+
+    public boolean getLocado() {
+        return locado;
+    }
+
+    public void setLocado(boolean locado) {
+        this.locado = locado;
     }
 }

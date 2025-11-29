@@ -1,15 +1,13 @@
 package com.locadora.filmes.services;
 
+import com.locadora.filmes.controllers.dtos.ClienteDTO;
+import com.locadora.filmes.controllers.dtos.FilmeDTO;
 import com.locadora.filmes.controllers.dtos.ReservaFilmeDTO;
-import com.locadora.filmes.entities.Cliente;
-import com.locadora.filmes.entities.Filme;
 import com.locadora.filmes.entities.ReservaFilme;
-import com.locadora.filmes.exceptions.ClienteNotFoundException;
 import com.locadora.filmes.exceptions.FilmeNotFoundException;
 import com.locadora.filmes.exceptions.ReservaFilmeNotFoundException;
-import com.locadora.filmes.repository.ClienteRepository;
-import com.locadora.filmes.repository.FilmeRepository;
 import com.locadora.filmes.repository.ReservaFilmeRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -27,55 +25,57 @@ public class ReservaFilmeServices {
     private ReservaFilmeRepository reservaFilmeRepository;
 
     @Autowired
-    private FilmeRepository filmeRepository;
+    private FilmeServices filmeServices;
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteServices clienteServices;
+
+    ModelMapper modelMapper = new ModelMapper();
 
     @Transactional(readOnly = true)
-    public List<ReservaFilme> findAll() {
+    public List<ReservaFilmeDTO> findAll() {
         List<ReservaFilme> listaReservaFilmes = reservaFilmeRepository.findAll();
+
+        List<ReservaFilmeDTO> reservaFilmeDTOS = listaReservaFilmes
+                .stream()
+                .map(reservaFilme -> modelMapper.map(reservaFilme, ReservaFilmeDTO.class))
+                .toList();
 
         if(listaReservaFilmes.isEmpty()){
             throw new ReservaFilmeNotFoundException("Não existe nenhuma reserva de filmes cadastrada.");
         }
 
-        return listaReservaFilmes;
+        return reservaFilmeDTOS;
     }
 
     @Transactional(readOnly = true)
-    public Optional<ReservaFilme> findById(Long idReserva) {
-        Optional<ReservaFilme> resultadoReservaFilme = reservaFilmeRepository.findById(idReserva);
+    public ReservaFilmeDTO findById(Long idReserva) {
+        ReservaFilme resultadoReservaFilme = reservaFilmeRepository.findById(idReserva)
+                .orElseThrow(() -> new ReservaFilmeNotFoundException("Reserva com o ID: " + idReserva + " não encontrada."));
 
-        if(resultadoReservaFilme.isEmpty()) {
-            throw new ReservaFilmeNotFoundException("Reserva com o ID: " + idReserva + " não encontrada.");
-        }
+        ReservaFilmeDTO reservaFilmeDTO = modelMapper.map(resultadoReservaFilme, ReservaFilmeDTO.class);
 
-        return resultadoReservaFilme;
+        return reservaFilmeDTO;
     }
 
     @Transactional
-    public void adicionarReservaFilme(ReservaFilmeDTO reservaFilmeDTO) {
+    public ReservaFilmeDTO adicionarReservaFilme(ReservaFilmeDTO novaReservaFilmeDTO) {
 
-    filmeRepository.findById(reservaFilmeDTO.filme().getIdFilme())
-            .orElseThrow(() -> new FilmeNotFoundException("Filme com ID " + reservaFilmeDTO.filme().getIdFilme()
-    + " não encontrado."));
+    FilmeDTO filmeDTO = filmeServices.findBydId(novaReservaFilmeDTO.filme().getIdFilme());
 
-    Cliente cliente = clienteRepository.findById(reservaFilmeDTO.cliente().getIdCliente())
-            .orElseThrow(() -> new ClienteNotFoundException("Cliente com ID " + reservaFilmeDTO.cliente().getIdCliente()
-    + " não encontrado."));
+    ClienteDTO clienteDTO = clienteServices.findById(novaReservaFilmeDTO.cliente().getIdCliente());
 
     ReservaFilme reservaFilme = new ReservaFilme();
     reservaFilme.setFilme(reservaFilme.getFilme());
     reservaFilme.setCliente(reservaFilme.getCliente());
     reservaFilme.setDataLocacao(LocalDateTime.now());
-    reservaFilme.setDiasReserva(reservaFilmeDTO.diasReserva());
-    reservaFilme.setReservado(reservaFilmeDTO.reservado());
-    reservaFilme.setPrecoLocacao(reservaFilmeDTO.precoLocacao());
-    reservaFilme.setTaxaLocacao(reservaFilmeDTO.taxaLocacao());
+    reservaFilme.setDiasReserva(novaReservaFilmeDTO.diasReserva());
+    reservaFilme.setReservado(novaReservaFilmeDTO.reservado());
+    reservaFilme.setPrecoLocacao(novaReservaFilmeDTO.precoLocacao());
+    reservaFilme.setTaxaLocacao(novaReservaFilmeDTO.taxaLocacao());
 
     LocalDateTime dataDevolucao = LocalDateTime.now();
-    dataDevolucao = dataDevolucao.plusDays(reservaFilmeDTO.diasReserva());
+    dataDevolucao = dataDevolucao.plusDays(novaReservaFilmeDTO.diasReserva());
 
     reservaFilme.setDataDevolucaoLocacao(dataDevolucao);
 
@@ -84,14 +84,12 @@ public class ReservaFilmeServices {
 
     int filmesPorCliente = reservasPorCliente(reservaFilme.getCliente().getIdCliente());
 
-    if(filmesPorCliente > 0){
-        cliente.setFilmesLocadosMes(cliente.getFilmesLocadosMes() + 1);
-    } else {
-        cliente.setFilmesLocadosMes(1);
-    }
+    filmeServices.informarFilmeLocado(filmeDTO.idFilme(), true);
+    clienteServices.adicionarContagemFilmesLocados(clienteDTO.idCliente(), filmesPorCliente);
 
-    clienteRepository.save(cliente);
     reservaFilmeRepository.save(reservaFilme);
+
+    return modelMapper.map(reservaFilme, ReservaFilmeDTO.class);
     }
 
     @Transactional
@@ -148,17 +146,11 @@ public class ReservaFilmeServices {
         } else {
             reservaFilme.setPrecoLocacao(precoLocacao);
         }
+
         reservaFilme.setReservado('N');
         reservaFilme.setStatusLocacao('I');
 
         reservaFilmeRepository.save(reservaFilme);
-    }
-
-    @Transactional
-    public boolean filmeReservado(Filme filme) {
-        boolean existe = reservaFilmeRepository.existsIdFilme(filme.getIdFilme());
-
-        return existe;
     }
 
     private int reservasPorCliente(Long idCliente){

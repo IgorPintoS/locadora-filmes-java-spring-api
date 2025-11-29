@@ -8,5 +8,6 @@ public record FilmeDTO(Long idFilme,
                        Integer faixaEtaria,
                        String secao,
                        String prateleira,
-                       Integer quantidadeEstoque) {
+                       Integer quantidadeEstoque,
+                       boolean locado) {
 }

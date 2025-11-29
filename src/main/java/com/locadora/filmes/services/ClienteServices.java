@@ -109,4 +109,18 @@ public class ClienteServices {
 
         return modelMapper.map(clienteSalvo, ClienteDTO.class);
     }
+
+    @Transactional
+    public void adicionarContagemFilmesLocados(Long idCliente, int quantidade) {
+        ClienteDTO clienteDTO = this.findById(idCliente);
+        Cliente cliente = modelMapper.map(clienteDTO, Cliente.class);
+
+        if(quantidade > 0){
+            cliente.setFilmesLocados(cliente.getFilmesLocados() + 1);
+        } else {
+            cliente.setFilmesLocados(1);
+        }
+
+        clienteRepository.save(cliente);
+    }
 }

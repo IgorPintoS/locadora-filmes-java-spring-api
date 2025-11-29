@@ -4,7 +4,6 @@ import com.locadora.filmes.controllers.dtos.FilmeDTO;
 import com.locadora.filmes.services.FilmeServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

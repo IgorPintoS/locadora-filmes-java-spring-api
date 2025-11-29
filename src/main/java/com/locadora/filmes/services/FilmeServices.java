@@ -3,6 +3,7 @@ package com.locadora.filmes.services;
 import com.locadora.filmes.controllers.dtos.FilmeDTO;
 import com.locadora.filmes.entities.Filme;
 import com.locadora.filmes.exceptions.FilmeExistsException;
+import com.locadora.filmes.exceptions.FilmeLocadoException;
 import com.locadora.filmes.exceptions.FilmeNotFoundException;
 import com.locadora.filmes.exceptions.FilmeQuantityInvalidException;
 import com.locadora.filmes.repository.FilmeRepository;
@@ -67,7 +68,11 @@ public class FilmeServices {
 
     @Transactional
     public void deletarFilme(Long idFilme){
-        this.findBydId(idFilme);
+        FilmeDTO filmeDTO = this.findBydId(idFilme);
+
+        if(filmeDTO.locado()) {
+            throw new FilmeLocadoException("O filme está locado e não pode ser deletado.");
+        }
 
         filmeRepository.deleteById(idFilme);
     }
@@ -104,6 +109,16 @@ public class FilmeServices {
         }
 
         filme.setQuantidadeEstoque(quantidade);
+
+        filmeRepository.save(filme);
+    }
+
+    @Transactional
+    public void informarFilmeLocado(Long idFilme, boolean locado) {
+        FilmeDTO filmeDTO = findBydId(idFilme);
+
+        Filme filme = modelMapper.map(filmeDTO, Filme.class);
+        filme.setLocado(locado);
 
         filmeRepository.save(filme);
     }
