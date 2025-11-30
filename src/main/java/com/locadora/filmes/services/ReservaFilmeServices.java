@@ -4,6 +4,8 @@ import com.locadora.filmes.controllers.dtos.ClienteDTO;
 import com.locadora.filmes.controllers.dtos.FilmeDTO;
 import com.locadora.filmes.controllers.dtos.ReservaFilmeDTO;
 import com.locadora.filmes.entities.ReservaFilme;
+import com.locadora.filmes.enums.StatusLocacao;
+import com.locadora.filmes.enums.StatusReserva;
 import com.locadora.filmes.exceptions.FilmeNotFoundException;
 import com.locadora.filmes.exceptions.ReservaFilmeNotFoundException;
 import com.locadora.filmes.repository.ReservaFilmeRepository;
@@ -70,7 +72,6 @@ public class ReservaFilmeServices {
     reservaFilme.setCliente(reservaFilme.getCliente());
     reservaFilme.setDataLocacao(LocalDateTime.now());
     reservaFilme.setDiasReserva(novaReservaFilmeDTO.diasReserva());
-    reservaFilme.setReservado(novaReservaFilmeDTO.reservado());
     reservaFilme.setPrecoLocacao(novaReservaFilmeDTO.precoLocacao());
     reservaFilme.setTaxaLocacao(novaReservaFilmeDTO.taxaLocacao());
 
@@ -79,8 +80,8 @@ public class ReservaFilmeServices {
 
     reservaFilme.setDataDevolucaoLocacao(dataDevolucao);
 
-    reservaFilme.setReservado('S');
-    reservaFilme.setStatusLocacao('A');
+    reservaFilme.setStatusReserva(StatusReserva.RESERVADO);
+    reservaFilme.setStatusLocacao(StatusLocacao.ATIVO);
 
     int filmesPorCliente = reservasPorCliente(reservaFilme.getCliente().getIdCliente());
 
@@ -147,8 +148,8 @@ public class ReservaFilmeServices {
             reservaFilme.setPrecoLocacao(precoLocacao);
         }
 
-        reservaFilme.setReservado('N');
-        reservaFilme.setStatusLocacao('I');
+        reservaFilme.setStatusReserva(StatusReserva.NAORESERVADO);
+        reservaFilme.setStatusLocacao(StatusLocacao.INATIVO);
 
         reservaFilmeRepository.save(reservaFilme);
     }

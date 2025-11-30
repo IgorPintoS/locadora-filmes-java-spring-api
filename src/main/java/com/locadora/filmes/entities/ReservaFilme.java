@@ -1,5 +1,7 @@
 package com.locadora.filmes.entities;
 
+import com.locadora.filmes.enums.StatusLocacao;
+import com.locadora.filmes.enums.StatusReserva;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -30,7 +32,7 @@ public class ReservaFilme {
     private Cliente cliente;
 
     @Column(name = "reservado")
-    private Character reservado;
+    private StatusReserva statusReserva;
 
     @Column(name = "data_locacao")
     private LocalDateTime dataLocacao;
@@ -39,7 +41,7 @@ public class ReservaFilme {
     private LocalDateTime dataDevolucaoLocacao;
 
     @Column(name = "status_locacao")
-    private char statusLocacao;
+    private StatusLocacao statusLocacao;
 
     @Column(name = "filme_devolvido")
     private boolean filmeDevolvido;
@@ -48,14 +50,14 @@ public class ReservaFilme {
     }
 
     public ReservaFilme(Filme filme, Cliente cliente, Double precoLocacao, Double taxaLocacao, Integer diasReserva,
-                        Character reservado, LocalDateTime dataLocacao, LocalDateTime dataDevolucaoLocacao,
-                        char statusLocacao, boolean filmeDevolvido) {
+                        StatusReserva statusReserva, LocalDateTime dataLocacao, LocalDateTime dataDevolucaoLocacao,
+                        StatusLocacao statusLocacao, boolean filmeDevolvido) {
         this.cliente = cliente;
         this.filme = filme;
         this.precoLocacao = precoLocacao;
         this.taxaLocacao = taxaLocacao;
         this.diasReserva = diasReserva;
-        this.reservado = reservado;
+        this.statusReserva = statusReserva;
         this.dataLocacao = dataLocacao;
         this.dataDevolucaoLocacao = dataDevolucaoLocacao;
         this.statusLocacao = statusLocacao;
@@ -90,12 +92,12 @@ public class ReservaFilme {
         return idReserva;
     }
 
-    public Character getReservado() {
-        return reservado;
+    public StatusReserva getStatusReserva() {
+        return statusReserva;
     }
 
-    public void setReservado(Character reservado) {
-        this.reservado = reservado;
+    public void setStatusReserva(StatusReserva statusReserva) {
+        this.statusReserva = statusReserva;
     }
 
     public LocalDateTime getDataLocacao() {
@@ -114,11 +116,11 @@ public class ReservaFilme {
         this.dataDevolucaoLocacao = dataDevolucaoLocacao;
     }
 
-    public char getStatusLocacao() {
+    public StatusLocacao getStatusLocacao() {
         return statusLocacao;
     }
 
-    public void setStatusLocacao(char statusLocacao) {
+    public void setStatusLocacao(StatusLocacao statusLocacao) {
         this.statusLocacao = statusLocacao;
     }
 
