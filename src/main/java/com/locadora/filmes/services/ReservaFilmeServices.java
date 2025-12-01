@@ -1,5 +1,6 @@
 package com.locadora.filmes.services;
 
+import com.locadora.filmes.config.ModelMapperConfig;
 import com.locadora.filmes.controllers.dtos.ClienteDTO;
 import com.locadora.filmes.controllers.dtos.FilmeDTO;
 import com.locadora.filmes.controllers.dtos.ReservaFilmeDTO;
@@ -32,7 +33,8 @@ public class ReservaFilmeServices {
     @Autowired
     private ClienteServices clienteServices;
 
-    ModelMapper modelMapper = new ModelMapper();
+    @Autowired
+    private ModelMapperConfig modelMapper;
 
     @Transactional(readOnly = true)
     public List<ReservaFilmeDTO> findAll() {
@@ -40,7 +42,7 @@ public class ReservaFilmeServices {
 
         List<ReservaFilmeDTO> reservaFilmeDTOS = listaReservaFilmes
                 .stream()
-                .map(reservaFilme -> modelMapper.map(reservaFilme, ReservaFilmeDTO.class))
+                .map(reservaFilme -> modelMapper.modelMapper().map(reservaFilme, ReservaFilmeDTO.class))
                 .toList();
 
         if(listaReservaFilmes.isEmpty()){
@@ -55,7 +57,7 @@ public class ReservaFilmeServices {
         ReservaFilme resultadoReservaFilme = reservaFilmeRepository.findById(idReserva)
                 .orElseThrow(() -> new ReservaFilmeNotFoundException("Reserva com o ID: " + idReserva + " não encontrada."));
 
-        ReservaFilmeDTO reservaFilmeDTO = modelMapper.map(resultadoReservaFilme, ReservaFilmeDTO.class);
+        ReservaFilmeDTO reservaFilmeDTO = modelMapper.modelMapper().map(resultadoReservaFilme, ReservaFilmeDTO.class);
 
         return reservaFilmeDTO;
     }
@@ -90,7 +92,7 @@ public class ReservaFilmeServices {
 
     reservaFilmeRepository.save(reservaFilme);
 
-    return modelMapper.map(reservaFilme, ReservaFilmeDTO.class);
+    return modelMapper.modelMapper().map(reservaFilme, ReservaFilmeDTO.class);
     }
 
     @Transactional
@@ -149,7 +151,7 @@ public class ReservaFilmeServices {
         }
 
         reservaFilme.setStatusReserva(StatusReserva.NAORESERVADO);
-        reservaFilme.setStatusLocacao(StatusLocacao.INATIVO);
+        reservaFilme.setStatusLocacao(StatusLocacao.DEVOLVIDO);
 
         reservaFilmeRepository.save(reservaFilme);
     }

@@ -1,5 +1,6 @@
 package com.locadora.filmes.services;
 
+import com.locadora.filmes.config.ModelMapperConfig;
 import com.locadora.filmes.controllers.dtos.FilmeDTO;
 import com.locadora.filmes.entities.Filme;
 import com.locadora.filmes.exceptions.FilmeExistsException;
@@ -7,7 +8,6 @@ import com.locadora.filmes.exceptions.FilmeLocadoException;
 import com.locadora.filmes.exceptions.FilmeNotFoundException;
 import com.locadora.filmes.exceptions.FilmeQuantityInvalidException;
 import com.locadora.filmes.repository.FilmeRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +21,7 @@ public class FilmeServices {
     private FilmeRepository filmeRepository;
 
     @Autowired
-    private ReservaFilmeServices reservaFilmeServices;
-
-    ModelMapper modelMapper = new ModelMapper();
+    private ModelMapperConfig modelMapper;
 
     @Transactional(readOnly = true)
     public List<FilmeDTO> findAll(){
@@ -31,7 +29,7 @@ public class FilmeServices {
 
         List<FilmeDTO> filmeDTOList = listaFilmes
                 .stream()
-                .map(filme -> modelMapper.map(filme, FilmeDTO.class))
+                .map(filme -> modelMapper.modelMapper().map(filme, FilmeDTO.class))
                 .toList();
 
         return filmeDTOList;
@@ -42,7 +40,7 @@ public class FilmeServices {
         Filme filme = filmeRepository.findById(idFilme)
                 .orElseThrow(() -> new FilmeNotFoundException("Filme com o ID: " + idFilme + " não encontrado."));
 
-        FilmeDTO filmeDTO = modelMapper.map(filme, FilmeDTO.class);
+        FilmeDTO filmeDTO = modelMapper.modelMapper().map(filme, FilmeDTO.class);
 
         return filmeDTO;
     }
@@ -63,7 +61,7 @@ public class FilmeServices {
 
         filmeRepository.save(filme);
 
-        return modelMapper.map(filme, FilmeDTO.class);
+        return modelMapper.modelMapper().map(filme, FilmeDTO.class);
     }
 
     @Transactional
@@ -81,7 +79,7 @@ public class FilmeServices {
     public FilmeDTO editarFilme(FilmeDTO filmeAtualizadoDTO, Long idFilme){
         FilmeDTO filmeDTO = this.findBydId(idFilme);
 
-        Filme filme = modelMapper.map(filmeDTO, Filme.class);
+        Filme filme = modelMapper.modelMapper().map(filmeDTO, Filme.class);
 
         String filmeExistente = filme.getTitulo();
 
@@ -95,14 +93,14 @@ public class FilmeServices {
 
         filmeRepository.save(filme);
 
-        return modelMapper.map(filme, FilmeDTO.class);
+        return modelMapper.modelMapper().map(filme, FilmeDTO.class);
     }
 
     @Transactional
     public void adicionarEstoqueFilme(Long idFilme, Integer quantidade){
         FilmeDTO filmeDTO = this.findBydId(idFilme);
 
-        Filme filme =  modelMapper.map(filmeDTO, Filme.class);
+        Filme filme =  modelMapper.modelMapper().map(filmeDTO, Filme.class);
 
         if(quantidade < 0) {
             throw new FilmeQuantityInvalidException("Quantidade informada é inválida, precisa ser maior que zero.");
@@ -117,7 +115,7 @@ public class FilmeServices {
     public void informarFilmeLocado(Long idFilme, boolean locado) {
         FilmeDTO filmeDTO = findBydId(idFilme);
 
-        Filme filme = modelMapper.map(filmeDTO, Filme.class);
+        Filme filme = modelMapper.modelMapper().map(filmeDTO, Filme.class);
         filme.setLocado(locado);
 
         filmeRepository.save(filme);

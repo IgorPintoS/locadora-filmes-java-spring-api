@@ -28,7 +28,7 @@ public class ReservaFilme {
     private Filme filme;
 
     @JoinColumn(name = "cliente_id")
-    @ManyToMany
+    @ManyToOne
     private Cliente cliente;
 
     @Column(name = "reservado")

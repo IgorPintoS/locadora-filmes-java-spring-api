@@ -35,14 +35,6 @@ public class Filme {
     @Column(name = "quantidade_estoque")
     private Integer quantidadeEstoque;
 
-    @Column(name = "cliente")
-    @OneToMany
-    private Cliente cliente;
-
-    @Column(name = "reserva")
-    @OneToMany
-    private ReservaFilme reservaFilme;
-
     @Column(name = "locado")
     private boolean locado;
 
